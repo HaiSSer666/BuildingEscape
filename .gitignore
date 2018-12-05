@@ -1,0 +1,10 @@
+# Unreal Generated Files
+########################
+Build/
+DerivedDataCache/
+Binaries/
+Saved/
+*_BuiltData.uasset
+Content/StarterContent/
+Intermediate/
+*.db*
