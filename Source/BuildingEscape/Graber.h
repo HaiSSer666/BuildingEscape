@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Engine/World.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Components/InputComponent.h"
 #include "Graber.generated.h"
 
 
@@ -25,5 +27,18 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+private:
+	float Reach = 100.f;
+	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+	UInputComponent* InputComponent = nullptr;
+	//Ray cast and grab what it reaches
+	void Grab();
+	void Release();
+
+	// Find (assumed) attached phyics handle
+	void FindPhysicsHandleComponent();
+	// Setup (assumed) attached input component
+	void SetupInputComponent();
+	// Return hit for first physics body in reach
+	const FHitResult GetFirstPhysicsBodyInReach();
 };
