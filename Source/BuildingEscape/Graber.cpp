@@ -40,6 +40,7 @@ void UGraber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponen
 
 	// if the physics handle is attached
 	// move the object that we're holding
+	if (!PhysicsHandle) { return; }
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->SetTargetLocation(LineTraceEnd);
@@ -62,7 +63,6 @@ void UGraber::SetupInputComponent()
 	{
 		InputComponent->BindAction("Grab", IE_Released, this, &UGraber::Release);
 		InputComponent->BindAction("Grab", IE_Pressed, this, &UGraber::Grab);
-
 	}
 	else
 	{

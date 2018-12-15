@@ -20,22 +20,25 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();	
 	Owner = GetOwner();
+	DefaultRotation = Owner->GetActorRotation();
+	if (!PressurePlate)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s missing pressure plate"), *GetOwner()->GetName())
+	}
 }
 
 // Called every frame
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (GetActorsMassOnPlate() > 30.f)
-	{
-		OpenDoor();
-		LastDoorOpenTime = GetWorld()->GetTimeSeconds();
-	}
 
-	// Check if it's time to close the door
-	if (GetWorld()->GetTimeSeconds() - LastDoorOpenTime > DoorCloseDelay)
+	if (GetActorsMassOnPlate() > TriggerMass)
 	{
-		CloseDoor();
+		OnOpen.Broadcast();
+	}
+	else
+	{
+		OnClose.Broadcast();
 	}
 }
 
@@ -43,23 +46,12 @@ float UOpenDoor::GetActorsMassOnPlate()
 {
 	float TotalMass = 0.f;
 	TArray<AActor*> OverlapingActors;
+	if (!PressurePlate) { return TotalMass; }
 	PressurePlate->GetOverlappingActors(OverlapingActors);
 	for (const auto& Actor : OverlapingActors)
 	{
 		TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
-		UE_LOG(LogTemp, Warning, TEXT("Actor in trigger - %s, it's mass "), *Actor->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("Actor in trigger - %s, it's mass %f"), *Actor->GetName(), TotalMass);
 	}
 	return TotalMass;
-}
-
-void UOpenDoor::OpenDoor()
-{
-	// Set the door rotation
-	Owner->SetActorRotation(FRotator(0.f, OpenAngel, 0.f));
-}
-
-void UOpenDoor::CloseDoor()
-{
-	// Set the door rotation
-	Owner->SetActorRotation(FRotator(0.f, 0.f, 0.f));
 }
